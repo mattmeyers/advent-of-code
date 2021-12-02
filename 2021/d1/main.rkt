@@ -13,7 +13,7 @@
 (: windowify (-> (Listof Integer) (Listof Integer)))
 (define (windowify l)
     (if (= (length l) 3)
-        (list (foldr + 0 l))
+        (list (sum l))
         (append (list (sum (take l 3))) (windowify (cdr l)))))
 
 (: zip-diff (-> (Listof Integer) (Listof Integer)))
@@ -28,6 +28,7 @@
 (define (part-1)
      (count-positives (zip-diff (read-input "input.txt" ))))
 
+(: part-1 (-> Integer))
 (define (part-2)
     (count-positives (zip-diff (windowify (read-input "input.txt")))))
 
