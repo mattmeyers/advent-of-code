@@ -28,7 +28,7 @@
 (define (part-1)
      (count-positives (zip-diff (read-input "input.txt" ))))
 
-(: part-1 (-> Integer))
+(: part-2 (-> Integer))
 (define (part-2)
     (count-positives (zip-diff (windowify (read-input "input.txt")))))
 
