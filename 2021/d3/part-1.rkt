@@ -1,16 +1,6 @@
 #lang racket
 
-(define line-length 12)
-(define lines 1000)
-
-(define (read-input filename)
-    (file->lines filename))
-
-(define (line->binary ls)
-    (map (lambda (l) (string->number l 2)) ls))
-
-(define (nth-slice n ls)
-    (map (lambda (l) (bitwise-bit-field l n (+ n 1))) ls))
+(require "common.rkt")
 
 (define (sum-slice ns)
     (foldl + 0 ns))
@@ -33,8 +23,7 @@
         (string->number (implode (least-common ls)) 2)
         (string->number (implode (most-common ls)) 2)))
 
-(displayln 
-    (multiply
-            (sum-slices 
-                (line->binary 
-                    (read-input "input.txt")))))
+(multiply
+        (sum-slices 
+            (line->binary 
+                (read-input "input.txt"))))
