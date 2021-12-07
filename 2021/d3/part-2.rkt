@@ -1,5 +1,6 @@
 #lang racket
 
+(require racket/runtime-path)
 (require "common.rkt")
 
 (define (sum-bits ls)
@@ -33,8 +34,10 @@
 
 (provide part-2)
 
-(printf "test-input: ~a~%" (part-2 "test-input.txt"))
-(printf "input: ~a~%" (part-2 "input.txt"))
+(define-runtime-path test-input-file "test-input.txt")
+(define-runtime-path input-file "input.txt")
+(printf "Test Input: ~a~%" (part-2 (path->string test-input-file)))
+(printf "Full Input: ~a~%" (part-2 (path->string input-file)))
 
 (module+ test
     (require rackunit rackunit/text-ui)

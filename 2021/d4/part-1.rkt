@@ -1,5 +1,6 @@
 #lang racket
 
+(require racket/runtime-path)
 (require "common.rkt")
 
 (define (play numbers boards)
@@ -15,5 +16,7 @@
 
 (provide part-1)
 
-(printf "test-input: ~a~%" (part-1 "test-input.txt"))
-(printf "input: ~a~%" (part-1 "input.txt"))
+(define-runtime-path test-input-file "test-input.txt")
+(define-runtime-path input-file "input.txt")
+(printf "Test Input: ~a~%" (part-1 (path->string test-input-file)))
+(printf "Full Input: ~a~%" (part-1 (path->string input-file)))
