@@ -14,5 +14,5 @@
 
 (provide part-2)
 
-(part-2 "test-input.txt")
-(part-2 "input.txt")
+(printf "test-input: ~a~%" (part-2 "test-input.txt"))
+(printf "input: ~a~%" (part-2 "input.txt"))
