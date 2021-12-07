@@ -40,8 +40,6 @@
 (define (part-2 filename)
     (sum-fish (n-steps 256 (build-map (get-input filename)))))
 
-(provide part-2)
-
 (define-runtime-path test-input-file "test-input.txt")
 (define-runtime-path input-file "input.txt")
 (printf "Test Input: ~a~%" (part-2 (path->string test-input-file)))

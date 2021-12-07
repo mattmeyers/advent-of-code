@@ -17,8 +17,6 @@
     (define winner (play (car input) (cdr input)))
     (score (cdr winner) (final-number (car input) (car winner))))
 
-(provide part-2)
-
 (define-runtime-path test-input-file "test-input.txt")
 (define-runtime-path input-file "input.txt")
 (printf "Test Input: ~a~%" (part-2 (path->string test-input-file)))

@@ -27,8 +27,6 @@
 (define (part-1 filename)
     (position-product (calculate-position (build-deltas (read-input filename)))))
 
-(provide part-1)
-
 (define-runtime-path test-input-file "test-input.txt")
 (define-runtime-path input-file "input.txt")
 (printf "Test Input: ~a~%" (part-1 (path->string test-input-file)))

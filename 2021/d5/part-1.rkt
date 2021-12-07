@@ -19,8 +19,6 @@
                     (filter-out-diagonals
                         (parse-input (read-input filename))))))))
 
-(provide part-1)
-
 (define-runtime-path test-input-file "test-input.txt")
 (define-runtime-path input-file "input.txt")
 (printf "Test Input: ~a~%" (part-1 (path->string test-input-file)))

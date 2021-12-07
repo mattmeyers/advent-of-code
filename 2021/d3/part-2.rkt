@@ -32,8 +32,6 @@
         (run (- line-len 1) number-lines most-common-bit) 
         (run (- line-len 1) number-lines least-common-bit)))
 
-(provide part-2)
-
 (define-runtime-path test-input-file "test-input.txt")
 (define-runtime-path input-file "input.txt")
 (printf "Test Input: ~a~%" (part-2 (path->string test-input-file)))
