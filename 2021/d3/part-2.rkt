@@ -23,14 +23,18 @@
             (filter-rows (f (nth-slice n ls)) n ls )
             f)))
 
-(define (part-2 lines)
+(define (part-2 filename)
+    (define lines (read-input filename))
     (define line-len (string-length (car lines)))
     (define number-lines (line->binary lines))
     (* 
         (run (- line-len 1) number-lines most-common-bit) 
         (run (- line-len 1) number-lines least-common-bit)))
 
-(part-2 (read-input "input.txt"))
+(provide part-2)
+
+(printf "test-input: ~a~%" (part-2 "test-input.txt"))
+(printf "input: ~a~%" (part-2 "input.txt"))
 
 (module+ test
     (require rackunit rackunit/text-ui)

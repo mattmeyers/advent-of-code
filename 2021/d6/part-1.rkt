@@ -8,4 +8,10 @@
 (define (n-steps n fs)
     (if (= n 0) fs (n-steps (- n 1) (step fs))))
 
-(length (n-steps 80 (get-input "input.txt")))
+(define (part-1 filename)
+    (length (n-steps 80 (get-input filename))))
+
+(provide part-1)
+
+(printf "test-input: ~a~%" (part-1 "test-input.txt"))
+(printf "input: ~a~%" (part-1 "input.txt"))

@@ -36,4 +36,10 @@
 (define (sum-fish ht)
     (foldr + 0 (hash-values ht)))
 
-(sum-fish (n-steps 256 (build-map (get-input "input.txt"))))
+(define (part-2 filename)
+    (sum-fish (n-steps 256 (build-map (get-input filename)))))
+
+(provide part-2)
+
+(printf "test-input: ~a~%" (part-2 "test-input.txt"))
+(printf "input: ~a~%" (part-2 "input.txt"))

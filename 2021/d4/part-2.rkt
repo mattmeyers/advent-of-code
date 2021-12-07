@@ -11,9 +11,12 @@
         (cons (length numbers) (car boards))
         (play (cdr numbers) (play-round (car numbers) (filter-winners boards)))))
 
-(define (part-2)
-    (define input (parse-input (read-input "input.txt")))
+(define (part-2 filename)
+    (define input (parse-input (read-input filename)))
     (define winner (play (car input) (cdr input)))
     (score (cdr winner) (final-number (car input) (car winner))))
 
-(part-2)
+(provide part-2)
+
+(printf "test-input: ~a~%" (part-2 "test-input.txt"))
+(printf "input: ~a~%" (part-2 "input.txt"))

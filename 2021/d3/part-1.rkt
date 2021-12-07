@@ -23,7 +23,13 @@
         (string->number (implode (least-common ls)) 2)
         (string->number (implode (most-common ls)) 2)))
 
-(multiply
-        (sum-slices 
-            (line->binary 
-                (read-input "input.txt"))))
+(define (part-1 filename)
+    (multiply
+            (sum-slices 
+                (line->binary 
+                    (read-input filename)))))
+
+(provide part-1)
+
+(printf "test-input: ~a~%" (part-1 "test-input.txt"))
+(printf "input: ~a~%" (part-1 "input.txt"))
