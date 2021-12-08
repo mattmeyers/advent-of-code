@@ -15,6 +15,7 @@ func main() {
 	}
 
 	fmt.Printf("Part 1: %v\n", part1(string(input)))
+	fmt.Printf("Part 2: %v\n", part2(string(input)))
 }
 
 type dimension struct {
@@ -38,6 +39,23 @@ func (d dimension) slack() int {
 	}
 
 	return min
+}
+
+func (d dimension) minPerimeter() int {
+	max := d.l
+	if d.w > max {
+		max = d.w
+	}
+
+	if d.h > max {
+		max = d.h
+	}
+
+	return 2*d.l + 2*d.w + 2*d.h - 2*max
+}
+
+func (d dimension) volume() int {
+	return d.l * d.w * d.h
 }
 
 func parseInput(input string) []dimension {
@@ -74,6 +92,17 @@ func part1(input string) int {
 	sum := 0
 	for _, d := range dims {
 		sum += d.surfaceArea() + d.slack()
+	}
+
+	return sum
+}
+
+func part2(input string) int {
+	dims := parseInput(input)
+
+	sum := 0
+	for _, d := range dims {
+		sum += d.minPerimeter() + d.volume()
 	}
 
 	return sum
