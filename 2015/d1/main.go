@@ -13,6 +13,7 @@ func main() {
 	}
 
 	fmt.Printf("Part 1: %v\n", part1(string(input)))
+	fmt.Printf("Part 2: %v\n", part2(string(input)))
 }
 
 func part1(input string) int {
@@ -22,6 +23,23 @@ func part1(input string) int {
 			floor++
 		} else {
 			floor--
+		}
+	}
+
+	return floor
+}
+
+func part2(input string) int {
+	floor := 0
+	for i, c := range input {
+		if c == '(' {
+			floor++
+		} else {
+			floor--
+		}
+
+		if floor < 0 {
+			return i + 1
 		}
 	}
 
