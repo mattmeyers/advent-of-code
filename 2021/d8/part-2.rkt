@@ -1,5 +1,7 @@
 #lang racket
 
+(require racket/runtime-path)
+
 ;; We define the digits in terms of the standardized 8. This allows us to quickly identify
 ;; digits later by sorting them alphabetically and comparing.
 ;;
@@ -121,9 +123,12 @@
 (define (decode codes code-map)
     (string->number (foldr string-append "" (map (lambda (c) (identify-number c code-map)) codes))))
 
-(define (part-2)
-    (define data (parse-input (read-input "input.txt")))
+(define (part-2 filename)
+    (define data (parse-input (read-input filename)))
     (foldl + 0 (map (lambda (datum) (decode (last datum) (get-code (first datum)))) data)))
 
-(part-2)
+(define-runtime-path test-input-file "test-input.txt")
+(define-runtime-path input-file "input.txt")
+(printf "Test Input: ~a~%" (part-2 (path->string test-input-file)))
+(printf "Full Input: ~a~%" (part-2 (path->string input-file)))
 
