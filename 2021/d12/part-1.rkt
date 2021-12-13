@@ -56,9 +56,11 @@
     (define al (make-adjacency-list filename))
     (count-routes (build-routes al (set) "start")))
 
-(define-runtime-path test-input-file "test-input.txt")
+(define-runtime-path test-input-1-file "test-input-1.txt")
 (define-runtime-path test-input-2-file "test-input-2.txt")
+(define-runtime-path test-input-3-file "test-input-3.txt")
 (define-runtime-path input-file "input.txt")
-(printf "Test Input: ~a~%" (part-1 (path->string test-input-file)))
+(printf "Test Input 1: ~a~%" (part-1 (path->string test-input-1-file)))
 (printf "Test Input 2: ~a~%" (part-1 (path->string test-input-2-file)))
+(printf "Test Input 3: ~a~%" (part-1 (path->string test-input-3-file)))
 (printf "Full Input: ~a~%" (part-1 (path->string input-file)))
