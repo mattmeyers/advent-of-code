@@ -50,21 +50,15 @@
 (define (build-routes al visited curr)
     (define new-visited (update-visited visited curr))
     (if (string=? curr "end")
-        (list curr)
-        (append 
-            (list curr) 
-            (map 
-                (lambda (n) (build-routes al new-visited n)) 
-                (get-children al curr new-visited)))))
-
-(define (count-routes routes)
-    (if (empty? (cdr routes))
-        (if (string=? "end" (car routes)) 1 0)
-        (foldl (lambda (r c) (+ c (count-routes r))) 0 (cdr routes))))
+        1
+        (foldl 
+            (lambda (n sum) (+ sum (build-routes al new-visited n)))
+            0
+            (get-children al curr new-visited))))
 
 (define (part-2 filename)
     (define al (make-adjacency-list filename))
-    (count-routes(build-routes al #hash() "start")))
+    (build-routes al #hash() "start"))
 
 (define-runtime-path test-input-1-file "test-input-1.txt")
 (define-runtime-path test-input-2-file "test-input-2.txt")
