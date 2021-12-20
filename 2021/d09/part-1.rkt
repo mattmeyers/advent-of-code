@@ -15,7 +15,8 @@
 
 (define (part-1 filename)
     (define input (get-input filename))
-    (calculate-risk (filter-low-points (get-low-point-mask input) (flatten input))))
+    (define mask (get-low-point-mask input))
+    (calculate-risk (filter-low-points mask (flatten input))))
 
 (define-runtime-path test-input-file "test-input.txt")
 (define-runtime-path input-file "input.txt")
