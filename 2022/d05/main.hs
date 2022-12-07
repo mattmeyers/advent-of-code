@@ -2,7 +2,7 @@ module Main where
 
 import Prelude hiding (lookup)
 import Data.Text (splitOn, pack, unpack)
-import Data.Sequence (Seq (Empty, (:|>)), fromList, update, lookup, viewr, foldMapWithIndex, foldlWithIndex)
+import Data.Sequence (Seq, fromList, update, lookup)
 import Data.List (transpose)
 
 type State = Seq [String]
@@ -30,11 +30,11 @@ chunk :: Int -> [a] -> [[a]]
 chunk _ [] = []
 chunk n xs = take n xs : chunk n (drop n xs)
 
-parseInputMoves :: String -> [(Int, Int, Int)]
+parseInputMoves :: String -> [Move]
 parseInputMoves s = map parseInputMove $ lines s
 
-parseInputMove :: String -> (Int, Int, Int)
-parseInputMove l = (n, src, dst)
+parseInputMove :: String -> Move
+parseInputMove l = (n, src-1, dst-1)
     where
         ws = words l
         n = parseInt $ ws !! 1
@@ -44,11 +44,11 @@ parseInputMove l = (n, src, dst)
 parseInt :: String -> Int
 parseInt = read
 
-run :: (State, [Move]) -> State
-run (state, moves) = foldl applyMove state moves
+solve1 :: (State, [Move]) -> String
+solve1 (state, moves) = topCrates $ foldl applyMove state moves
 
-run' :: (State, [Move]) -> State
-run' (state, moves) = foldl applyMove' state moves
+solve2 :: (State, [Move]) -> String
+solve2 (state, moves) = topCrates $ foldl applyMove' state moves
 
 applyMove :: State -> Move -> State
 applyMove s (0, src, dst) = s
@@ -58,7 +58,7 @@ applyMove' :: State -> Move -> State
 applyMove' s (n, src, dst) = moveCrate s n src dst
 
 moveCrate :: State -> Int -> Int -> Int -> State
-moveCrate s nCrates src dst = removeCrates (src-1) nCrates $ pushCrates s (dst-1) (take nCrates $ grabStack (src-1) s)
+moveCrate s nCrates src dst = removeCrates src nCrates $ pushCrates s dst (take nCrates $ grabStack src s)
 
 grabStack :: Int -> State -> [String]
 grabStack n s = grabValue $ lookup n s
@@ -73,15 +73,17 @@ pushCrates s n val = update n (val ++ grabStack n s) s
 removeCrates :: Int -> Int -> State -> State
 removeCrates stackNum nCrates s = update stackNum (drop nCrates $ grabStack stackNum s) s
 
-init' :: [a] -> [a]
-init' [] = []
-init' xs = init xs
-
 topCrates :: State -> String
 topCrates = foldl (\acc v -> acc ++ head v ) ""
 
+run :: ((State, [Move]) -> String) -> String -> IO ()
+run f filename = do
+    contents <- readFile filename
+    print . f $ parseInput contents
+
 main :: IO ()
 main = do
-    contents <- readFile "input.txt"
-    print . topCrates . run $ parseInput contents
-    print . topCrates . run' $ parseInput contents
+    run solve1 "sample.txt"
+    run solve1 "input.txt"
+    run solve2 "sample.txt"
+    run solve2 "input.txt"
