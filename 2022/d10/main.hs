@@ -12,34 +12,43 @@ parseInstruction ["addx", v] = Addx $ read v
 parseInstruction ["noop"] = Nop
 parseInstruction _ = error "unknown instruction"
 
-run :: [Int] -> [Instruction] -> [Int]
-run = foldl (\ acc i -> acc ++ parseLine acc i)
+calculateRegister :: [Instruction] -> [Int]
+calculateRegister = foldl (\ acc i -> acc ++ runInstruction acc i) [1]
 
-parseLine :: [Int] -> Instruction -> [Int]
-parseLine s (Addx n) = [last s, n + last s]
-parseLine s Nop =  [last s]
+runInstruction :: [Int] -> Instruction -> [Int]
+runInstruction s (Addx n) = [last s, n + last s]
+runInstruction s Nop =  [last s]
 
-calcResult :: [Int] -> Int
-calcResult ls = foldl (\acc i -> acc + f i) 0 [20,60..220]
+calcTotalSignalStrength :: [Int] -> Int
+calcTotalSignalStrength ls = foldl (\acc i -> acc + calcSignalStrength i) 0 [20,60..220]
     where
         s = fromList ls
-        f = \n -> n * index s (n-1)
+        calcSignalStrength = \n -> n * index s (n-1)
 
-run' :: [Instruction] -> [String]
-run' is = map (drawLine 0) (chunk 40 $ run [1] is)
+drawLines :: [Instruction] -> [String]
+drawLines is = map drawLine $ chunk 40 $ calculateRegister is
 
-drawLine :: Int -> [Int] -> [Char]
-drawLine _ [] = []
-drawLine currentCycle (spritePos:ps)
-    | abs (currentCycle - spritePos) <= 1 = '#' : drawLine (currentCycle+1) ps
-    | otherwise = '.' : drawLine (currentCycle+1) ps
+drawLine :: [Int] -> String
+drawLine = drawPixel 0
+
+drawPixel :: Int -> [Int] -> [Char]
+drawPixel _ [] = []
+drawPixel currentCycle (spritePos:ps)
+    | abs (currentCycle - spritePos) <= 1 = '#' : drawPixel (currentCycle+1) ps
+    | otherwise = '.' : drawPixel (currentCycle+1) ps
 
 chunk :: Int -> [a] -> [[a]]
 chunk _ [] = []
 chunk n xs = take n xs : chunk n (drop n xs)
 
+solve1 :: String -> Int
+solve1 s = calcTotalSignalStrength $ calculateRegister $ parseInput s
+
+solve2 :: String -> String
+solve2 s = unlines . drawLines $ parseInput s
+
 main :: IO ()
 main = do
     contents <- readFile "input.txt"
-    print . calcResult $ run [1] $ parseInput contents
-    putStr . unlines . run' $ parseInput contents
+    print $ solve1 contents
+    putStr $ solve2 contents
