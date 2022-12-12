@@ -72,12 +72,12 @@ updateWorryLevel1 m = div (op m worry) 3
     worry = head $ items m
 
 updateWorryLevel2 :: MonkeyMap -> UpdateWorryFn
-updateWorryLevel2 mm m = mod (op m worry) $ sumTestValues mm
+updateWorryLevel2 mm m = mod (op m worry) $ calculateModulus mm
   where
     worry = head $ items m
 
-sumTestValues :: MonkeyMap -> Int
-sumTestValues mm = foldl (\acc m -> acc * test m) 1 $ elems mm
+calculateModulus :: MonkeyMap -> Int
+calculateModulus mm = foldl (\acc m -> acc * test m) 1 $ elems mm
 
 chooseTarget :: Monkey -> Int -> Int
 chooseTarget m worry =
