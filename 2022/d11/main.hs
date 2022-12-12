@@ -1,7 +1,7 @@
 module Main where
 
-import Data.List (sort, reverse)
-import Data.Map.Strict (Map, adjust, fromList, (!))
+import Data.List (reverse, sort)
+import Data.Map.Strict (Map, adjust, elems, fromList, size, (!))
 import Data.Text (Text, pack, splitOn, unpack)
 
 data Monkey = Monkey
@@ -13,12 +13,14 @@ data Monkey = Monkey
     inspections :: Int
   }
 
---   deriving (Show)
-
 type MonkeyMap = Map Int Monkey
 
-parseInput :: String -> Map Int Monkey
-parseInput s = fromList $ zip [0 .. 7] $ map (parseMonkey . splitOn (pack "\n")) $ splitOn (pack "\n\n") (pack s)
+type UpdateWorryFn = Monkey -> Int
+
+parseInput :: String -> MonkeyMap
+parseInput s = fromList $ zip [0 .. (length monkeys - 1)] monkeys
+  where
+    monkeys = map (parseMonkey . splitOn (pack "\n")) $ splitOn (pack "\n\n") (pack s)
 
 parseMonkey :: [Text] -> Monkey
 parseMonkey ls =
@@ -30,9 +32,9 @@ parseMonkey ls =
       ifFalse = lastInt $ ls !! 5,
       inspections = length is
     }
-    where
-        is = parseItems $ ls !! 1
-        test = lastInt $ ls !! 3
+  where
+    is = parseItems $ ls !! 1
+    test = lastInt $ ls !! 3
 
 parseItems :: Text -> [Int]
 parseItems l = map parseInt $ splitOn (pack ", ") $ last $ splitOn (pack ": ") l
@@ -52,22 +54,30 @@ parseOp' _ _ = error "cannot parse operation"
 parseInt :: Text -> Int
 parseInt = read . unpack
 
-inspectItems :: Int -> MonkeyMap -> MonkeyMap
-inspectItems monkeyNum mm
+inspectItems :: UpdateWorryFn -> Int -> MonkeyMap -> MonkeyMap
+inspectItems f monkeyNum mm
   | null (items (mm ! monkeyNum)) = mm
-  | otherwise = inspectItems monkeyNum $ inspectItem mm monkeyNum
+  | otherwise = inspectItems f monkeyNum $ inspectItem mm monkeyNum f
 
-inspectItem :: MonkeyMap -> Int -> MonkeyMap
-inspectItem mm monkeyNum = catchItem target worry $ throwItem mm monkeyNum
+inspectItem :: MonkeyMap -> Int -> UpdateWorryFn -> MonkeyMap
+inspectItem mm monkeyNum f = catchItem target worry $ throwItem mm monkeyNum
   where
     monkey = mm ! monkeyNum
-    worry = updateWorryLevel monkey
+    worry = f monkey
     target = chooseTarget monkey worry
 
-updateWorryLevel :: Monkey -> Int
-updateWorryLevel m = mod (op m worry) 9699690
+updateWorryLevel1 :: UpdateWorryFn
+updateWorryLevel1 m = div (op m worry) 3
   where
     worry = head $ items m
+
+updateWorryLevel2 :: MonkeyMap -> UpdateWorryFn
+updateWorryLevel2 mm m = mod (op m worry) $ sumTestValues mm
+  where
+    worry = head $ items m
+
+sumTestValues :: MonkeyMap -> Int
+sumTestValues mm = foldl (\acc m -> acc * test m) 1 $ elems mm
 
 chooseTarget :: Monkey -> Int -> Int
 chooseTarget m worry =
@@ -88,23 +98,28 @@ catchItem monkeyNum worry =
     (\m -> m {items = items m ++ [worry], inspections = 1 + inspections m})
     monkeyNum
 
-runOnce :: MonkeyMap -> MonkeyMap
-runOnce mm = foldl (flip inspectItems) mm [0 .. 7]
+runOnce :: MonkeyMap -> UpdateWorryFn -> MonkeyMap
+runOnce mm f = foldl (flip (inspectItems f)) mm [0 .. (size mm -1)]
 
-run :: MonkeyMap -> MonkeyMap
-run mm = foldl (\acc i -> runOnce acc) mm [0 .. 9999]
-
-listItems :: MonkeyMap -> [[Int]]
-listItems mm = foldl (\acc i -> acc ++ [items $ mm ! i]) [] [0 .. 7]
+run :: MonkeyMap -> UpdateWorryFn -> Int -> MonkeyMap
+run mm f n = foldl (\acc i -> runOnce acc f) mm [1 .. n]
 
 listInspections :: MonkeyMap -> [Int]
-listInspections mm = foldl (\acc i -> acc ++ [inspections (mm ! i) - length (items $ mm ! i)]) [] [0 .. 7]
+listInspections mm = foldl (\acc i -> acc ++ [inspections (mm ! i) - length (items $ mm ! i)]) [] [0 .. (size mm - 1)]
 
 calculateMonkeyBusiness :: MonkeyMap -> Int
 calculateMonkeyBusiness mm = product $ take 2 $ reverse . sort $ listInspections mm
 
+solve1 :: String -> Int
+solve1 s = calculateMonkeyBusiness $ run (parseInput s) updateWorryLevel1 20
+
+solve2 :: String -> Int
+solve2 s = calculateMonkeyBusiness $ run mm (updateWorryLevel2 mm) 10000
+  where
+    mm = parseInput s
+
 main :: IO ()
 main = do
   contents <- readFile "input.txt"
-  let mm = run $ parseInput contents
-  print $ calculateMonkeyBusiness mm
+  print $ solve1 contents
+  print $ solve2 contents
