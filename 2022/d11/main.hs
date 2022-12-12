@@ -24,14 +24,15 @@ parseMonkey :: [Text] -> Monkey
 parseMonkey ls =
   Monkey
     { items = is,
-      op = parseOp $ ls !! 2,
-      test = lastInt $ ls !! 3,
+      op = parseOp test $ ls !! 2,
+      test = test,
       ifTrue = lastInt $ ls !! 4,
       ifFalse = lastInt $ ls !! 5,
       inspections = length is
     }
     where
         is = parseItems $ ls !! 1
+        test = lastInt $ ls !! 3
 
 parseItems :: Text -> [Int]
 parseItems l = map parseInt $ splitOn (pack ", ") $ last $ splitOn (pack ": ") l
@@ -39,14 +40,14 @@ parseItems l = map parseInt $ splitOn (pack ", ") $ last $ splitOn (pack ": ") l
 lastInt :: Text -> Int
 lastInt s = parseInt $ last $ splitOn (pack " ") s
 
-parseOp :: Text -> (Int -> Int)
-parseOp t = parseOp' . map unpack $ splitOn (pack " ") $ last $ splitOn (pack "= ") t
+parseOp :: Int -> Text -> (Int -> Int)
+parseOp n t = parseOp' n $ map unpack $ splitOn (pack " ") $ last $ splitOn (pack "= ") t
 
-parseOp' :: [String] -> (Int -> Int)
-parseOp' ["old", "*", "old"] = \n -> n * n
-parseOp' ["old", "*", x] = \n -> n * read x
-parseOp' ["old", "+", x] = \n -> n + read x
-parseOp' _ = error "cannot parse operation"
+parseOp' :: Int -> [String] -> (Int -> Int)
+parseOp' _ ["old", "*", "old"] = \n -> n * n
+parseOp' _ ["old", "*", x] = \n -> n * read x
+parseOp' _ ["old", "+", x] = \n -> n + read x
+parseOp' _ _ = error "cannot parse operation"
 
 parseInt :: Text -> Int
 parseInt = read . unpack
@@ -64,7 +65,7 @@ inspectItem mm monkeyNum = catchItem target worry $ throwItem mm monkeyNum
     target = chooseTarget monkey worry
 
 updateWorryLevel :: Monkey -> Int
-updateWorryLevel m = div (op m worry) 3
+updateWorryLevel m = mod (op m worry) 9699690
   where
     worry = head $ items m
 
@@ -91,13 +92,13 @@ runOnce :: MonkeyMap -> MonkeyMap
 runOnce mm = foldl (flip inspectItems) mm [0 .. 7]
 
 run :: MonkeyMap -> MonkeyMap
-run mm = foldl (\acc i -> runOnce acc) mm [0 .. 19]
+run mm = foldl (\acc i -> runOnce acc) mm [0 .. 9999]
 
 listItems :: MonkeyMap -> [[Int]]
 listItems mm = foldl (\acc i -> acc ++ [items $ mm ! i]) [] [0 .. 7]
 
 listInspections :: MonkeyMap -> [Int]
-listInspections mm = foldl (\acc i -> acc ++ [inspections (mm ! i) - length (items $ mm ! i)]) [] [0 .. 3]
+listInspections mm = foldl (\acc i -> acc ++ [inspections (mm ! i) - length (items $ mm ! i)]) [] [0 .. 7]
 
 calculateMonkeyBusiness :: MonkeyMap -> Int
 calculateMonkeyBusiness mm = product $ take 2 $ reverse . sort $ listInspections mm
