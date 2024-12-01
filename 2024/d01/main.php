@@ -1,21 +1,21 @@
 <?php
 
+/**
+ * @return array<array<int, int>>
+ */
 function parseInput(string $file): array
 {
-    $leftList = [];
-    $rightList = [];
+    $leftList = $rightList = [];
     foreach (file($file) as $line) {
-        $values = explode("   ", $line);
-        $leftList[] = (int)$values[0];
-        $rightList[] = (int)$values[1];
+        [$leftList[], $rightList[]] = explode("   ", trim($line));
     }
 
-    return [$leftList, $rightList];
+    return [array_map('intval', $leftList), array_map('intval', $rightList)];
 }
 
 /**
- * @param array<int> $l
- * @param array<int> $r
+ * @param array<int, int> $l
+ * @param array<int, int> $r
  */
 function part1(array $l, array $r): int
 {
@@ -23,32 +23,29 @@ function part1(array $l, array $r): int
     sort($r);
 
     $sum = 0;
-    foreach ($l as $i => $v) {
-        $sum += abs($v - $r[$i]);
+    for ($i = count($l) - 1; $i >= 0; $i--) {
+        $sum += abs($l[$i] - $r[$i]);
     }
 
     return $sum;
 }
 
 /**
- * @param array<int> $l
- * @param array<int> $r
+ * @param array<int, int> $l
+ * @param array<int, int> $r
  */
 function part2(array $l, array $r): int
 {
     $counts = [];
     foreach ($r as $v) {
-        if (!array_key_exists($v, $counts)) {
-            $counts[$v] = 0;
-        }
-
-        $counts[$v]++;
+        $counts[$v] = ($counts[$v] ?? 0) + 1;
     }
 
     $sum = 0;
     foreach ($l as $v) {
         $sum += $v * ($counts[$v] ?? 0);
     }
+
     return $sum;
 }
 
