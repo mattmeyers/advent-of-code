@@ -29,13 +29,13 @@ function parseInput(string \$filename): array
     return \$lines;
 }
 
-/** @return array<int, string> */
+/** @param array<int, string> \$values */
 function part1(array \$values): int
 {
     return 0;
 }
 
-/** @return array<int, string> */
+/** @param array<int, string> \$values */
 function part2(array \$values): int
 {
     return 0;
