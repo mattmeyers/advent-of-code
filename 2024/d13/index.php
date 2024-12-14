@@ -3,13 +3,55 @@
 class Machine
 {
     function __construct(
-        public $x1,
-        public $y1,
-        public $x2,
-        public $y2,
-        public $x,
-        public $y,
+        public readonly int $x1,
+        public readonly int $y1,
+        public readonly int $x2,
+        public readonly int $y2,
+        public readonly int $x,
+        public readonly int $y,
     ) {}
+
+    /** 
+     * The number of times each button must be pressed can be determined by a 
+     * system of equations. Let
+     *
+     *  - x1 be the number of horizontal spaces moved by pressing button A
+     *  - x2 be the number of horizontal spaces moved by pressing button B
+     *  - y1 be the number of vertical spaces moved by pressing button A
+     *  - y2 be the number of vertical spaces moved by pressing button B
+     *  - x be the target horizontal position
+     *  - y be the target vertical position
+     *  - n be the number of times button A is pressed
+     *  - m be the number of times button B is pressed
+     *
+     * Then the system can be modelled as
+     *
+     *      n*x1 + m*x2 = x
+     *      n*y1 + m*y2 = y
+     *
+     * Solving for n yields
+     *
+     *      n = (y2*x - x2*y) / (x1*y2 - y1*x2)
+     *
+     * It then follows that
+     *
+     *      m = (x - n*x) / x2
+     *
+     * @return array{int, int} 
+     *
+     * @throws Exception If there are no integer solutions.
+     */
+    function calculateSteps(): array
+    {
+        $n = ($this->y2 * $this->x - $this->x2 * $this->y) / ($this->x1 * $this->y2 - $this->y1 * $this->x2);
+        $m = ($this->x - $n * $this->x1) / $this->x2;
+
+        if ($n !== (int)$n || $m != (int)$m) {
+            throw new Exception("Unsolvable, no integer solutions");
+        }
+
+        return [$n, $m];
+    }
 }
 
 /** @return array<int, Machine> */
@@ -36,66 +78,44 @@ function parseInput(string $filename): array
     return $machines;
 }
 
+
 /** @param array<int, Machine> $values */
 function part1(array $values): int
 {
     $tokens = 0;
-    foreach ($values as $m) {
-        $n = ($m->y2 * $m->x - $m->x2 * $m->y) / ($m->x1 * $m->y2 - $m->y1 * $m->x2);
-        $m = ($m->x - $n * $m->x1) / $m->x2;
-
-        if ($n > 100 || $n !== (int)$n || $m > 100 || $m != (int)$m) {
+    foreach ($values as $machine) {
+        try {
+            [$n, $m] = $machine->calculateSteps();
+            if ($n > 100  || $m > 100) continue;
+            $tokens += 3 * $n + $m;
+        } catch (Exception) {
             continue;
         }
-
-        $tokens += 3 * $n + $m;
     }
 
     return $tokens;
 }
 
 /** @param array<int, Machine> $values */
-function part2(array $values)
+function part2(array $values): int
 {
     $tokens = 0;
     foreach ($values as $machine) {
         $machine = new Machine(
-            (string)$machine->x1,
-            (string)$machine->y1,
-            (string)$machine->x2,
-            (string)$machine->y2,
-            bcadd($machine->x, 10000000000000),
-            bcadd($machine->y, 10000000000000),
+            $machine->x1,
+            $machine->y1,
+            $machine->x2,
+            $machine->y2,
+            $machine->x + 10000000000000,
+            $machine->y + 10000000000000,
         );
 
-        bcscale(0);
-        $a = bcmul($machine->y2, $machine->x);
-        $b = bcmul($machine->x2, $machine->y);
-        $c = bcmul($machine->x1, $machine->y2);
-        $d = bcmul($machine->y1, $machine->x2);
-
-        $e = bcsub($a, $b);
-        $f = bcsub($c, $d);
-
-
-        bcscale(6);
-        $n = bcdiv($e, $f);
-        if ((int)explode(".", $n)[1] != 0) {
+        try {
+            [$n, $m] = $machine->calculateSteps();
+            $tokens += 3 * $n + $m;
+        } catch (Exception) {
             continue;
         }
-
-        bcscale(0);
-        $g = bcmul($n, $machine->x1);
-        $h = bcsub($machine->x, $g);
-
-        bcscale(6);
-        $m = bcdiv($h, $machine->x2);
-        if ((int)explode(".", $m)[1] != 0) {
-            continue;
-        }
-
-        bcscale(0);
-        $tokens = bcadd($tokens, bcadd(bcmul(3, $n), $m));
     }
 
     return $tokens;
