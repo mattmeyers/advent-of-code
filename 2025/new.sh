@@ -43,7 +43,7 @@ if __name__ == "__main__":
     p1_solution = part1(p1_input)
 
     assert p1_sample_solution == P1_SAMPLE_SOLUTION, f"Expected {P1_SAMPLE_SOLUTION}, got {p1_sample_solution}"  # noqa
-    # assert p1_solution == P1_SOLUTION, f"Expected {P1_SOLUTION}, got {p1_solution}"  #noqa
+    # assert p1_solution == P1_SOLUTION, f"Expected {P1_SOLUTION}, got {p1_solution}"  # noqa
 
     p2_sample_input = parse_input("sample.txt")
     p2_input = parse_input("input.txt")
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     p2_solution = part2(p2_input)
 
     assert p2_sample_solution == P2_SAMPLE_SOLUTION, f"Expected {P2_SAMPLE_SOLUTION}, got {p2_sample_solution}"  # noqa
-    # assert p2_solution == P2_SOLUTION, f"Expected {P2_SOLUTION}, got {p2_solution}"  #noqa
+    # assert p2_solution == P2_SOLUTION, f"Expected {P2_SOLUTION}, got {p2_solution}"  # noqa
 
     print(f"Part 1: {p1_solution}\nPart 2: {p2_solution}")
 CODE
