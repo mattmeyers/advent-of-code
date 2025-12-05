@@ -21,17 +21,19 @@ P1_SOLUTION = 0
 P2_SAMPLE_SOLUTION = 0
 P2_SOLUTION = 0
 
+type InputType = list[str]
 
-def parse_input(filename: str) -> list[str]:
+
+def parse_input(filename: str) -> InputType:
     with open(filename, "r") as f:
         return [line.strip() for line in f]
 
 
-def part1(input: list[str]) -> int:
+def part1(input: InputType) -> int:
     return 0
 
 
-def part2(input: list[str]) -> int:
+def part2(input: InputType) -> int:
     return 0
 
 
